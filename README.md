@@ -90,6 +90,9 @@ Built-in types
 (validate Named 'Billy)
 (validate Named "Billy")
 (validate Named :Billy)
+
+(validate (Option String) "Billy")
+(validate (Option String) nil)
 ```
 
 Sequences
