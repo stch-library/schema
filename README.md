@@ -37,6 +37,10 @@ Feedback is welcome.  New features should be directed to Prismatic Schema.
 
 ## Examples
 
+```Clojure
+(use 'stch.schema)
+```
+
 Functions
 ```Clojure
 (defn* rest-args :- (Vector String)
