@@ -48,7 +48,7 @@ Functions
   (vec likes))
 
 (defn* multi-arity :- String
-  ([url :- String] (multi-arity url))
+  ([url :- String] (multi-arity url true))
   ([url :- String
     follow-redirects? :- Boolean]
    url))
