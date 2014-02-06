@@ -33,6 +33,79 @@ This code will be used in production, but currently is not.
 
 Feedback is welcome.  New features should be directed to Prismatic Schema.
 
+## Examples
+
+Functions
+```Clojure
+(defn* rest-args :- (Vector String)
+  [name :- String, age :- Int & likes :- [String]]
+  (vec likes))
+
+(defn* multi-arity :- String
+  ([url :- String] (multi-arity url))
+  ([url :- String
+    follow-redirects? :- Boolean]
+   url))
+
+(defn* higher-order :- (Fn Int [Int])
+  [f :- (Fn Int [Int])]
+  f)
+
+(defn* any-fn :- (Fn)
+  [f :- (Fn)]
+  f)
+
+(validate (Fn Int [Int]) inc)
+(validate (Fn String [Map]) :name)
+```
+
+Records
+```Clojure
+(defrecord* Employee
+  [hired :- Date
+   position :- Keyword
+   roles :- [String]])
+```
+
+Built-in types
+```Clojure
+(validate Symbol 'a)
+(validate Set #{"Billy" :Bobby})
+(validate Map {})
+(validate Map {:name "Billy"})
+
+(validate (Vector String) ["hi" "hello"])
+(validate (Vector) ["Bob" :Billy])
+
+(validate (List String) '("hi" "hello"))
+(validate (List) '("Bob" :Billy))
+
+(validate (Vector String) ["hi" "hello"])
+(validate (Vector) ["Bob" :Billy])
+
+(validate Named 'Billy)
+(validate Named "Billy")
+(validate Named :Billy)
+```
+
+Sequences
+```Clojure
+(validate [(one Int) Double] [1234 95.6])
+(validate [(optional Int) (optional String)] [])
+(validate [(pair String Int)] [["David" 35]["Billy" 37]])
+```
+
+Predicates
+```Clojure
+(def Set (pred set?))
+```
+
+Union and Intersection
+```Clojure
+(def Named (U String Symbol Keyword))
+(defn List [x] (I (pred list?) [x]))
+```
+
 ## How to use
 
 1. Clone repo locally
