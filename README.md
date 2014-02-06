@@ -1,5 +1,7 @@
 # stch.schema
 
+Forked from https://github.com/Prismatic/schema
+
 ## Motivations for forking:
 
 1. Ability to "use" rather than "require".
@@ -69,8 +71,13 @@ Records
 
 Built-in types
 ```Clojure
+(validate String "Billy")
+(validate Boolean true)
 (validate Symbol 'a)
+(validate Date #inst "2014-02-06")
+
 (validate Set #{"Billy" :Bobby})
+
 (validate Map {})
 (validate Map {:name "Billy"})
 
@@ -79,9 +86,6 @@ Built-in types
 
 (validate (List String) '("hi" "hello"))
 (validate (List) '("Bob" :Billy))
-
-(validate (Vector String) ["hi" "hello"])
-(validate (Vector) ["Bob" :Billy])
 
 (validate Named 'Billy)
 (validate Named "Billy")
