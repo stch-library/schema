@@ -21,6 +21,7 @@ Forked from https://github.com/Prismatic/schema
 8. either is now U, short for union.  For example, (U String Keyword).
 9. both is now I, short for intersection.  For example, (I (pred vector?) [String]).
 10. A few minor bug fixes.  For example, "every?" should be "some" in the error output of either/U.
+11. test and coerce namespace are not included.
 
 I have my own set of unit-tests, 118 to be exact.  Code coverage is pretty decent, though, not as exhaustive as Prismatic Schema.
 
