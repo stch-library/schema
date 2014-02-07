@@ -16,7 +16,7 @@ Forked from https://github.com/Prismatic/schema
 3. => and =>* are now just Fn, and have a single syntax.  For example, (validate (Fn Int [Int]) inc).  You can also do (Fn) which produces (Fn Any [& [Any]]) for when you really don't want to think about the types (they're not checked anyways).  FnSchema uses ifn? instead of fn?, something that was recently fixed in Prismatic Schema.
 4. one, optional, and pair can be unnamed.  For example, (one Int) or (pair Keyword String).  The errors messages reference the element position: elem0, elem1, etc. in this scenario.
 5. There are no dependencies.  Macros were moved to core namespace.
-6. Lot's of "built-in" types. Int, Num, Keyword, Symbol, Ratio, Date, UUID, Named, Map, Set, (Vector String), (Vector), (List String), (List), (Queue String), (Queue).
+6. Lot's of "built-in" types. Int, Num, Keyword, Symbol, Ratio, Atom, Date, UUID, Named, Map, Set, (Vector String), (Vector), (List String), (List), (Queue String), (Queue).
 7. maybe is now Option.  For example, (Option String).
 8. either is now U, short for union.  For example, (U String Keyword).
 9. both is now I, short for intersection.  For example, (I (pred vector?) [String]).
