@@ -52,14 +52,14 @@
   (validate (Fn String [Map]) :name)
   (validate (Fn Int [Int]) 3)
 
-  (defrecord* User
+  (defrecord' User
     [activated :- Date
      status :- Keyword
      likes :- [String]])
 
   (validate User (->User #inst "2014-02-02" :active ["pizza" 35]))
 
-  (defn* hello-world :- String
+  (defn' hello-world :- String
     ([] "Hello, world")
     ([greeting :- String]
      (str greeting ", world")))
@@ -121,7 +121,7 @@
 
   (validate #"(?i)^[A-Z]+$" "Billy")
 
-  (defn* map-destruct :- (Vector String)
+  (defn' map-destruct :- (Vector String)
     [{:keys [likes]} :- {:likes [String]}]
     likes)
 
@@ -131,7 +131,7 @@
   (with-fn-validation
     (map-destruct {:likes '("Pizza" "Hot Dogs")}))
 
-  (defn* seq-destruct :- String
+  (defn' seq-destruct :- String
     [[fst & rst] :- [String]]
     fst)
 
@@ -141,7 +141,7 @@
   (with-fn-validation
     (seq-destruct ["hi" :hello]))
 
-  (defn* rest-args :- (Vector String)
+  (defn' rest-args :- (Vector String)
     [name :- String, age :- Int & likes :- [String]]
     (vec likes))
 
@@ -154,7 +154,7 @@
   (with-fn-validation
     (rest-args "Billy" 35 :pizza :hamburgers))
 
-  (defn* higher-order :- (Fn Int [Int])
+  (defn' higher-order :- (Fn Int [Int])
     [f :- (Fn Int [Int])]
     f)
 
@@ -162,7 +162,7 @@
     (higher-order inc))
 
   ; Not currently supported
-  (defn* keyword-args
+  (defn' keyword-args
     [url :- String & {:keys [follow-redirects]}])
 
   (validate (List String) '("hi" "hello"))
