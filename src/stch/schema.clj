@@ -35,19 +35,19 @@
   enumerations, arbitrary predicates, and more.
 
   Schema also provides macros for defining records with
-  schematized elements (defrecord*), and named or anonymous
-  functions (fn* and defn*) with schematized inputs and
+  schematized elements (defrecord'), and named or anonymous
+  functions (fn' and defn') with schematized inputs and
   return values.  In addition to producing better-documented
   records and functions, these macros allow you to retrieve
   the schema associated with the defined record or function.
   Moreover, functions include optional *validation*, which will throw
   an error if the inputs or outputs do not match the provided schemas:
 
-  (defrecord* FooBar
+  (defrecord' FooBar
     [foo :- Int
      bar :- String])
 
-  (defn* quux :- Int
+  (defn' quux :- Int
     [foobar :- Foobar
      mogrifier :- Number]
     (* mogrifier (+ (:foo foobar) (Long/parseLong (:bar foobar)))))
@@ -62,7 +62,7 @@
   ==> Input to quux does not match schema: [(named {:foo (not (integer? 10.2))} foobar) nil]
 
   As you can see, the preferred syntax for providing
-  type hints to schema's defrecord*, fn*, and defn* macros
+  type hints to schema's defrecord', fn', and defn' macros
   is to follow each element, argument, or function name with a
   :- schema.  Symbols without schemas default to a schema of Any.
   In Clojure, class (e.g., java.lang.String) and primitive schemas
@@ -72,7 +72,7 @@
   If you don't like this style, standard Clojure-style
   typehints are also supported:
 
-  (fn-schema (fn* [^String x]))
+  (fn-schema (fn' [^String x]))
   ==> (Fn Any [java.lang.String])
 
   You can directly type hint a symbol as a class, primitive,
@@ -80,11 +80,11 @@
   rules about ^, you must enclose the schema in a {:s schema}
   map like so:
 
-  (fn-schema (fn* [^{:s [String]} x]))
+  (fn-schema (fn' [^{:s [String]} x]))
   (Fn Any [java.lang.String])
 
   (We highly prefer the :- syntax to this abomination, however.)
-  See the docstrings of defrecord*, fn*, and defn* for more
+  See the docstrings of defrecord', fn', and defn' for more
   details about how to use these macros."
   (:require [clojure.string :as str]
             [clojure.data :as data]
@@ -141,7 +141,7 @@
     (util/->ValidationError ~schema ~value (delay ~expectation) ~fail-explanation)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Helpers for processing and normalizing element/argument schemas in defrecord* and (de)fn*
+;;; Helpers for processing and normalizing element/argument schemas in defrecord' and (de)fn'
 
 (defn- maybe-split-first [pred s]
   (if (pred (first s))
@@ -390,7 +390,7 @@
 
   Currently function schemas are purely descriptive;
   there is no validation except for functions defined directly
-  by fn* or defn*."
+  by fn' or defn'."
   ([]
    `(make-fn-schema ~'Any [~(parse-arity-spec '[& [Any]])]))
   ([output-schema & arity-schema-specs]
@@ -399,7 +399,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Public: schematized defrecord
 
-(defmacro defrecord*
+(defmacro defrecord'
   "Define a record with a schema.
 
   In addition to the ordinary behavior of defrecord,
@@ -407,7 +407,7 @@
   will automatically be used when validating instances of
   the Record class:
 
-  (defrecord* FooBar
+  (defrecord' FooBar
     [foo :- Int
      bar :- String])
 
@@ -490,15 +490,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Public: schematized functions
 
-(defmacro fn*
-  "fn* : defn* :: clojure.core/fn : defn
+(defmacro fn'
+  "fn' : defn' :: clojure.core/fn : defn
 
   See (doc defn) for details.
 
   Additional gotchas and limitations:
-  - Like defn*, the output schema must go on the fn name.
+  - Like defn', the output schema must go on the fn name.
   If you want an output schema, your function must have a name.
-  - Unlike defn*, the function schema is stored in metadata on the fn.
+  - Unlike defn', the function schema is stored in metadata on the fn.
   Clojure's implementation for metadata on fns currently produces a
   wrapper fn, which will decrease performance and negate the benefits
   of primitive type hints compared to clojure.core/fn."
@@ -510,7 +510,7 @@
     `(let ~outer-bindings
        (schematize-fn (fn ~name ~@fn-body) ~schema-form))))
 
-(defmacro defn*
+(defmacro defn'
   "Like defn, except that schema-style typehints can
   be given on the argument symbols and on the function
   name (for the return value).
@@ -519,7 +519,7 @@
   get its schema back, or use with-fn-validation to
   enable runtime checking of function inputs and outputs.
 
-  (defn* foo :- Num
+  (defn' foo :- Num
     [x :- Int
      y :- Num]
     (* x y))
@@ -553,8 +553,8 @@
   I.e., you can use destructuring, but you must put schema
   metadata on the top-level arguments, not the destructured variables.
 
-  Bad:  (defn* foo [{:keys [x :- Int]}])
-  Good: (defn* foo [{:keys [x]} :- {:x Int}])
+  Bad:  (defn' foo [{:keys [x :- Int]}])
+  Good: (defn' foo [{:keys [x]} :- {:x Int}])
   - Only a specific subset of rest-arg destructuring is supported:
   - & rest works as expected
   - & [a b] works, with schemas for individual elements parsed
@@ -588,16 +588,16 @@
          ~@fn-body)
        (util/declare-class-schema! (util/type-of ~name) ~schema-form))))
 
-(defmacro letfn*
+(defmacro letfn'
   [fnspecs# & body#]
   (list 'clojure.core/let
         (vec (interleave (map first fnspecs#)
-                         (map macroexpand (map #(cons `fn* %) fnspecs#))))
+                         (map macroexpand (map #(cons `fn' %) fnspecs#))))
         `(do ~@body#)))
 
 (defmacro with-fn-validation
   "Execute body with input and ouptut schema validation
-  turned on for all defn* and fn* instances."
+  turned on for all defn' and fn' instances."
   [& body]
   `(do
      (set-fn-validation! true)
@@ -1384,7 +1384,7 @@
 
 (defn set-fn-validation!
   "Globally turn on schema validation for all
-  fn* and defn* instances."
+  fn' and defn' instances."
   [on?]
   (.set_cell util/use-fn-validation on?))
 
@@ -1396,7 +1396,7 @@
 
 (defn ^FnSchema fn-schema
   "Produce the schema for a function defined
-  with fn* or defn*."
+  with fn' or defn'."
   [f]
   (assert! (fn? f) "Non-function %s" (util/type-of f))
   (or (util/class-schema (util/type-of f))
@@ -1424,6 +1424,10 @@
 (def Ratio
   "A Clojure ratio"
   clojure.lang.Ratio)
+
+(def Atom
+  "A Clojure atom"
+  clojure.lang.Atom)
 
 (def Regex
   "A regular expression."

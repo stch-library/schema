@@ -11,7 +11,7 @@ Forked from https://github.com/Prismatic/schema
 
 ## Differences:
 
-1. defn, defrecord, fn, and letfn are now defn*, defrecord*, fn*, and leftn*, repectively.
+1. defn, defrecord, fn, and letfn are now defn', defrecord', fn', and leftn', repectively.
 2. pred is now a macro so you can do (pred even?) instead of (pred even? 'even?).
 3. => and =>* are now just Fn, and have a single syntax.  For example, (validate (Fn Int [Int]) inc).  You can also do (Fn) which produces (Fn Any [& [Any]]) for when you really don't want to think about the types (they're not checked anyways).  FnSchema uses ifn? instead of fn?, something that was recently fixed in Prismatic Schema.
 4. one, optional, and pair can be unnamed.  For example, (one Int) or (pair Keyword String).  The errors messages reference the element position: elem0, elem1, etc. in this scenario.
@@ -22,12 +22,12 @@ Forked from https://github.com/Prismatic/schema
 9. both is now I, short for intersection.  For example, (I (pred vector?) [String]).
 10. A few minor bug fixes.  For example, "every?" should be "some" in the error output of either/U.
 
-I have my own set of unit-tests, 112 to be exact.  Code coverage is pretty decent, though, not as exhaustive as Prismatic Schema.
+I have my own set of unit-tests, 118 to be exact.  Code coverage is pretty decent, though, not as exhaustive as Prismatic Schema.
 
 Many thanks to Prismatic for sharing this awesome library.  It really is game changing in my opinion.  Please feel free to incorporate any changes into Prismatic Schema.  I will add significant changes from Prismatic Schema into this code base as they occur.   Most notably would be support for:
 
 ```Clojure
-(defn* create-user
+(defn' create-user
   [user-id :- Int & {:keys [name email]} :- {:name String :email String}])
 ```
 
@@ -43,21 +43,21 @@ Feedback is welcome.  New features should be directed to Prismatic Schema.
 
 Functions
 ```Clojure
-(defn* rest-args :- (Vector String)
+(defn' rest-args :- (Vector String)
   [name :- String, age :- Int & likes :- [String]]
   (vec likes))
 
-(defn* multi-arity :- String
+(defn' multi-arity :- String
   ([url :- String] (multi-arity url true))
   ([url :- String
     follow-redirects? :- Boolean]
    url))
 
-(defn* higher-order :- (Fn Int [Int])
+(defn' higher-order :- (Fn Int [Int])
   [f :- (Fn Int [Int])]
   f)
 
-(defn* any-fn :- (Fn)
+(defn' any-fn :- (Fn)
   [f :- (Fn)]
   f)
 
@@ -67,7 +67,7 @@ Functions
 
 Records
 ```Clojure
-(defrecord* Employee
+(defrecord' Employee
   [hired :- Date
    position :- Keyword
    roles :- [String]])

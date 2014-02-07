@@ -18,40 +18,40 @@
   {(required-key "husband") User
    (required-key "wife") User})
 
-(defrecord* Employee
+(defrecord' Employee
   [hired :- Date
    position :- Keyword
    roles :- [String]])
 
 (def queue (conj empty-queue "Billy" "Bobby"))
 
-(defn* simple-fn :- Int
+(defn' simple-fn :- Int
   [x :- Int]
   (inc x))
 
-(defn* map-destruct :- (Vector String)
+(defn' map-destruct :- (Vector String)
   [{:keys [likes]} :- {:likes [String]}]
   likes)
 
-(defn* seq-destruct :- String
+(defn' seq-destruct :- String
   [[fst & rst] :- [String]]
   fst)
 
-(defn* rest-args :- (Vector String)
+(defn' rest-args :- (Vector String)
   [name :- String, age :- Int & likes :- [String]]
   (vec likes))
 
-(defn* multi-arity :- String
+(defn' multi-arity :- String
   ([url :- String] (multi-arity url))
   ([url :- String
     follow-redirects? :- Boolean]
    url))
 
-(defn* higher-order :- (Fn Int [Int])
+(defn' higher-order :- (Fn Int [Int])
   [f :- (Fn Int [Int])]
   f)
 
-(defn* any-fn :- (Fn)
+(defn' any-fn :- (Fn)
   [f :- (Fn)]
   f)
 
@@ -472,7 +472,7 @@
     (invalid! '(not (instance? java.lang.String :Billy))
               (check (Option String) :Billy))))
 
-(describe "defn*"
+(describe "defn'"
   (it "map destruct"
     (should= ["Pizza" "Hot Dogs"]
              (with-fn-validation
@@ -529,7 +529,7 @@
       (should= '(Fn (Fn Any [& [Any]]) [(Fn Any [& [Any]])])
                (explain (fn-schema any-fn))))))
 
-(describe "defrecord*"
+(describe "defrecord'"
   (it "new record"
     (should= (->Employee #inst "2014-02-02"
                          :programmer
@@ -544,6 +544,45 @@
                      (->Employee #inst "2014-02-02"
                                  :programmer
                                  ["QA" 3])))))
+
+(describe "fn'"
+  (let [f (fn' increment :- Int
+            [n :- Int]
+            (inc n))]
+    (context "-"
+      (context "validate"
+        (it "named with return type"
+          (should= 2
+                   (with-fn-validation
+                     (f 1))))
+        (it "invalid"
+          (should-throw Exception
+                        "Input to increment does not match schema: [(named (not (integer? \"Billy\")) n)]"
+                        (with-fn-validation
+                          (f "Billy")))))
+      (context "explain"
+        (it "named with return type"
+          (should= '(Fn Int [Int])
+                   (explain (fn-schema f))))))))
+
+(describe "letfn'"
+  (letfn' [(x :- Num [] 1)
+           (y :- String [n :- Num]
+              (str n))]
+    (context "-"
+      (context "validate"
+        (it "success"
+          (should= "1" (with-fn-validation
+                         (y (x)))))
+        (it "invalid"
+          (should-throw Exception
+                        "Input to y does not match schema: [(named (not (instance? java.lang.Number \"1\")) n)]"
+            (with-fn-validation
+              (y "1")))))
+      (context "explain"
+        (it "input and output types"
+          (should= '(Fn java.lang.String [java.lang.Number])
+                   (explain (fn-schema y))))))))
 
 
 

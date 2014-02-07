@@ -1,4 +1,4 @@
-(defproject stch.schema "0.1.0"
+(defproject stch.schema "0.2.0"
   :description
   "Alternative Schema implementation.
   Clojure only at the moment."
