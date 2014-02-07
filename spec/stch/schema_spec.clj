@@ -181,6 +181,12 @@
     (it "Double (fail)"
       (invalid! '(not (instance? clojure.lang.Ratio 0.5))
                 (check Ratio 0.5))))
+  (context "Atom"
+    (it "Atom"
+      (should-not-throw (validate Atom (atom [1 2 3]))))
+    (it "Vector (fail)"
+      (invalid! '(not (instance? clojure.lang.Atom [1 2 3]))
+                (check Atom [1 2 3]))))
   (context "Regex"
     (it "Regex literal"
       (should-not-throw

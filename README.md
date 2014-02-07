@@ -23,7 +23,7 @@ Forked from https://github.com/Prismatic/schema
 10. A few minor bug fixes.  For example, "every?" should be "some" in the error output of either/U.
 11. test and coerce namespace are not included.
 
-I have my own set of unit-tests, 118 to be exact.  Code coverage is pretty decent, though, not as exhaustive as Prismatic Schema.
+I have my own set of unit-tests, around 120.  Code coverage is pretty decent, though, not as exhaustive as Prismatic Schema.
 
 Many thanks to Prismatic for sharing this awesome library.  It really is game changing in my opinion.  Please feel free to incorporate any changes into Prismatic Schema.  I will add significant changes from Prismatic Schema into this code base as they occur.   Most notably would be support for:
 
@@ -80,6 +80,7 @@ Built-in types
 (validate Boolean true)
 (validate Symbol 'a)
 (validate Date #inst "2014-02-06")
+(validate Atom (atom [1 2 3]))
 
 (validate Set #{"Billy" :Bobby})
 
