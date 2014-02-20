@@ -9,7 +9,8 @@
 
 ## 0.2.0
 
-1. Changed defn*, defrecord*, fn*, letfn* to defn', defrecord', fn', and letfn'. Added tests for fn' and letfn'.
+1. Changed defn*, defrecord*, fn*, letfn* to defn', defrecord', fn', and letfn'.
+2. Added tests for fn' and letfn'.
 
 ## 0.1.0
 
