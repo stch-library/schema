@@ -125,7 +125,7 @@ Union and Intersection
 1. Clone repo locally
 2. cd into cloned repo
 3. run "lein install"
-4. Add [stch.schema "0.2.0"] to your project dependencies.
+4. Add [stch.schema "0.2.1"] to your project dependencies.
 
 ## Unit-tests
 
