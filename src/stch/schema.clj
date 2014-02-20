@@ -273,7 +273,7 @@
       base)))
 
 (defn- apply-prepost-conditions
-  "Replicate pre/postcondition logic from clojure.core/fn."
+  "Replicate pre/post condition logic from clojure.core/fn."
   [body]
   (let [[conds body] (maybe-split-first #(and (map? %) (next body)) body)]
     (concat (map (fn [c] `(assert ~c)) (:pre conds))
@@ -329,8 +329,8 @@
                    (error! (format "Input to %s does not match schema: %s"
                                    '~fn-name (pr-str error#))
                            {:schema ~input-schema-sym :value args# :error error#}))))
-             (let [o# (loop ~(into (vec (interleave (map #(with-meta % {}) bind) bind-syms))
-                                   (when rest-arg [rest-arg rest-sym]))
+             (let [o# (let ~(into (vec (interleave (map #(with-meta % {}) bind) bind-syms))
+                                  (when rest-arg [rest-arg rest-sym]))
                         ~@(apply-prepost-conditions body))]
                (when validate#
                  (when-let [error# (~output-checker-sym o#)]
@@ -510,6 +510,22 @@
     `(let ~outer-bindings
        (schematize-fn (fn ~name ~@fn-body) ~schema-form))))
 
+(defn- format-arglist
+  "Simplistic attempt to add comma separation
+  to the arglist."
+  [arglist]
+  (let [num-args (count arglist)
+        {num-ann ':-} (frequencies arglist)]
+    (if (and (= (mod num-args 3) 0)
+             (= num-ann (/ num-args 3)))
+      (str "["
+           (->> arglist
+                (partition 3)
+                (map #(str/join " " %))
+                (str/join ", "))
+           "]")
+      arglist)))
+
 (defmacro defn'
   "Like defn, except that schema-style typehints can
   be given on the argument symbols and on the function
@@ -574,7 +590,7 @@
            (or attr-map? {})
            :doc (str
                  (str "Inputs: " (if (= 1 (count raw-arglists))
-                                   (first raw-arglists)
+                                   (format-arglist (first raw-arglists))
                                    raw-arglists))
                  (when-let [ret (when (= (first more) :-) (second more))]
                    (str "\n  Returns: " ret))

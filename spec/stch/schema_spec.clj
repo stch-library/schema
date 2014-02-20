@@ -55,6 +55,19 @@
   [f :- (Fn)]
   f)
 
+#_(defn' loopy :- Int
+  [x :- Int]
+  (if (< x 5)
+    (recur (inc x))
+    x))
+
+(defn' loop-recur :- Int
+  [x :- Int]
+  (loop [x x]
+    (if (< x 5)
+      (recur (inc x))
+      x)))
+
 (defprotocol BasicMath
   (add [this y]))
 
@@ -519,6 +532,13 @@
     (should= :name
              (with-fn-validation
                (any-fn :name))))
+  #_(it "recur with implicit loop"
+    (should= 5 (with-fn-validation
+                 (loopy 3))))
+
+  (it "loop/recur"
+    (should= 5 (with-fn-validation
+                 (loop-recur 3))))
   (context "explain"
     (it "single arity"
       (should= '(Fn Int [Int])
@@ -555,7 +575,7 @@
   (let [f (fn' increment :- Int
             [n :- Int]
             (inc n))]
-    (context "-"
+    (list
       (context "validate"
         (it "named with return type"
           (should= 2
@@ -575,7 +595,7 @@
   (letfn' [(x :- Num [] 1)
            (y :- String [n :- Num]
               (str n))]
-    (context "-"
+    (list
       (context "validate"
         (it "success"
           (should= "1" (with-fn-validation
