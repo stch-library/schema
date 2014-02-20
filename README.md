@@ -22,6 +22,7 @@ Forked from https://github.com/Prismatic/schema
 9. both is now I, short for intersection.  For example, (I (pred vector?) [String]).
 10. A few minor bug fixes.  For example, "every?" should be "some" in the error output of either/U.
 11. test and coerce namespace are not included.
+12. recur without an explicit call to loop is NOT supported by this library.  You must use recur within an explicit call to loop.  See tests for examples.
 
 I have my own set of unit-tests, around 120.  Code coverage is pretty decent, though, not as exhaustive as Prismatic Schema.
 
