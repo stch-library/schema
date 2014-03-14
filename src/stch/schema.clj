@@ -56,7 +56,7 @@
   ==> 30
 
   (fn-schema quux)
-  ==> (Fn Int [(record user.FooBar {:foo Int, :bar java.lang.String}) java.lang.Number])
+  ==> (Fn Int [(Record user.FooBar {:foo Int, :bar java.lang.String}) java.lang.Number])
 
   (with-fn-validation (quux (FooBar. 10.2 \"5\") 2))
   ==> Input to quux does not match schema: [(named {:foo (not (integer? 10.2))} foobar) nil]
@@ -161,7 +161,7 @@
   (or (when (symbol? tag)
         (when-let [v (resolve env tag)]
           (when (looks-like-a-protocol-var? v)
-            `(protocol (deref ~v)))))
+            `(Protocol (deref ~v)))))
       tag))
 
 (def ^:private primitive-sym?
@@ -242,7 +242,7 @@
 
 (defn- single-arg-schema-form
   [rest? [index arg]]
-  `(~(if rest? `optional `one)
+  `(~(if rest? `Optional `One)
      ~(extract-schema-form arg)
      ~(if (symbol? arg)
         `'~arg
@@ -370,7 +370,7 @@
   [spec]
   (assert-c! (vector? spec) "An arity spec must be a vector")
   (let [[init more] ((juxt take-while drop-while) #(not= '& %) spec)
-        fixed (mapv (fn [i s] `(one ~s '~(symbol (str "arg" i)))) (range) init)]
+        fixed (mapv (fn [i s] `(One ~s '~(symbol (str "arg" i)))) (range) init)]
     (if (empty? more)
       fixed
       (do (assert-c! (and (= (count more) 2) (vector? (second more)))
@@ -412,7 +412,7 @@
      bar :- String])
 
   (stch.schema.util/class-schema FooBar)
-  ==> (record user.FooBar {:foo Int, :bar java.lang.String})
+  ==> (Record user.FooBar {:foo Int, :bar java.lang.String})
 
   (check FooBar (FooBar. 1.2 :not-a-string))
   ==> {:foo (not (integer? 1.2)), :bar (not (instance? java.lang.String :not-a-string))}
@@ -453,7 +453,7 @@
        (util/declare-class-schema!
         ~name
         (util/assoc-when
-         (record
+         (Record
           ~name
           (merge ~(into {}
                         (for [k field-schema]
@@ -776,7 +776,7 @@
   "Any value, including nil."
   (AnythingSchema. nil))
 
-;;; eq (to a single allowed value)
+;;; Eq (to a single allowed value)
 
 (defrecord EqSchema [v]
   Schema
@@ -785,14 +785,14 @@
       (if (= v x)
         x
         (validation-error this x (list '= v (util/value-name x))))))
-  (explain [this] (list 'eq v)))
+  (explain [this] (list 'Eq v)))
 
-(defn eq
+(defn Eq
   "A value that must be (= v)."
   [v]
   (EqSchema. v))
 
-;;; enum (in a set of allowed values)
+;;; Enumerate (in a set of allowed values)
 
 (defrecord EnumSchema [vs]
   Schema
@@ -801,14 +801,14 @@
       (if (contains? vs x)
         x
         (validation-error this x (list vs (util/value-name x))))))
-  (explain [this] (cons 'enum vs)))
+  (explain [this] (cons 'Enumerate vs)))
 
-(defn enum
+(defn Enumerate
   "A value that must be = to some element of vs."
   [& vs]
   (EnumSchema. (set vs)))
 
-;;; pred (matches all values for which p? returns truthy)
+;;; Predicate (matches all values for which p? returns truthy)
 
 (defrecord PredicateSchema [p? pred-name]
   Schema
@@ -833,7 +833,7 @@
     (error! (format "Not a function: %s" p?)))
   (PredicateSchema. p? pred-name))
 
-(defmacro pred
+(defmacro Predicate
   ([p?]
    `(pred-internal ~p? '~p?))
   ([p? pred-name]
@@ -854,10 +854,9 @@
       (if (satisfies? p x)
         x
         (validation-error this x (list 'satisfies? (protocol-name this) (util/value-name x))))))
-  (explain [this] (list 'protocol (protocol-name this))))
+  (explain [this] (list 'Protocol (protocol-name this))))
 
-;; The cljs version is protocol by necessity, since cljs `satisfies?` is a macro.
-(defn protocol
+(defn Protocol
   "A value that must satsify? protocol p."
   [p]
   (assert! (:on p) "Cannot make protocol schema for non-protocol %s" p)
@@ -969,7 +968,7 @@
     (let [preds-and-walkers (mapv (fn [[pred schema]] [pred (subschema-walker schema)])
                                   preds-and-schemas)]
       (fn [x]
-        (if-let [[_ match] (first (filter (fn [[pred]] (pred x)) preds-and-walkers))]
+        (if-let [[_ match] (first (filter (fn [[pred]] (Predicate x)) preds-and-walkers))]
           (match x)
           (validation-error this x (list 'matches-some-condition? (util/value-name x)))))))
   (explain [this]
@@ -1225,27 +1224,27 @@
 ;; remaining elements. If optional elements are present, they
 ;; must be matched before the rest-schema is applied.
 
-(defrecord One [schema optional? name])
+(defrecord Single [schema optional? name])
 
-(defn one
+(defn One
   "A single required element of a sequence
   (not repeated, the implicit default)."
-  ([schema] (one schema nil))
+  ([schema] (One schema nil))
   ([schema name]
-   (One. schema false name)))
+   (Single. schema false name)))
 
-(defn optional
+(defn Optional
   "A single optional element of a sequence
   (not repeated, the implicit default)."
-  ([schema] (optional schema nil))
+  ([schema] (Optional schema nil))
   ([schema name]
-   (One. schema true name)))
+   (Single. schema true name)))
 
 (defn- parse-sequence-schema [s]
-  (let [[required more] (split-with #(and (instance? One %) (not (:optional? %))) s)
-        [optional more] (split-with #(and (instance? One %) (:optional? %)) more)]
+  (let [[required more] (split-with #(and (instance? Single %) (not (:optional? %))) s)
+        [optional more] (split-with #(and (instance? Single %) (:optional? %)) more)]
     (assert!
-     (and (<= (count more) 1) (every? #(not (instance? One %)) more))
+     (and (<= (count more) 1) (every? #(not (instance? Single %)) more))
      "Sequence schema %s does not match [one* optional* rest-schema?]" s)
     [(concat required optional) (first more)]))
 
@@ -1253,7 +1252,7 @@
   clojure.lang.APersistentVector
   (walker [this]
     (let [[singles multi] (parse-sequence-schema this)
-          single-walkers (vec (for [^One s singles]
+          single-walkers (vec (for [^Single s singles]
                                 [s (subschema-walker (.-schema s))]))
           multi-walker (when multi (subschema-walker multi))
           err-conj (util/result-builder (fn [m] (vec (repeat (count m) nil))))]
@@ -1264,7 +1263,7 @@
                    x x
                    index 0
                    out []]
-              (if-let [[^One first-single single-walker]
+              (if-let [[^Single first-single single-walker]
                        (first single-walkers)]
                 (if (empty? x)
                   (if (.-optional? first-single)
@@ -1274,7 +1273,7 @@
                                (vec (map first single-walkers))
                                nil
                                (list* 'present?
-                                      (for [[walker-index [^One single]]
+                                      (for [[walker-index [^Single single]]
                                             (indexed single-walkers)
                                             :while (not (.-optional? single))]
                                         (if-let [single-name (.-name single)]
@@ -1298,22 +1297,22 @@
     (let [[singles multi] (parse-sequence-schema this)]
       (vec
        (concat
-        (for [^One s singles]
-          (concat (list (if (.-optional? s) 'optional 'one)
+        (for [^Single s singles]
+          (concat (list (if (.-optional? s) 'Optional 'One)
                         (explain (.-schema s)))
                   (when-let [single-name (.-name s)]
                     (list single-name))))
         (when multi
           [(explain multi)]))))))
 
-(defn pair
+(defn Pair
   "A schema for a pair of schemas and
   optionally their names."
   ([first-schema second-schema]
-   (pair first-schema nil second-schema nil))
+   (Pair first-schema nil second-schema nil))
   ([first-schema first-name second-schema second-name]
-   [(one first-schema first-name)
-    (one second-schema second-name)]))
+   [(One first-schema first-name)
+    (One second-schema second-name)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Record Schemas
@@ -1328,7 +1327,7 @@
   (walker [this]
     (let [map-checker (subschema-walker schema)
           pred-checker (when-let [evf (:extra-validator-fn this)]
-                         (subschema-walker (pred evf)))]
+                         (subschema-walker (Predicate evf)))]
       (fn [r]
         (or (when-not (instance? klass r)
               (validation-error this r (list 'instance? klass (util/value-name r))))
@@ -1340,9 +1339,9 @@
                     pred-res
                     (merge r res)))))))))
   (explain [this]
-    (list 'record (symbol (.getName ^Class klass))                                (explain schema))))
+    (list 'Record (symbol (.getName ^Class klass))                                (explain schema))))
 
-(defn record
+(defn Record
   "A Record instance of type klass, whose
   elements match map schema 'schema'."
   [klass schema]
@@ -1362,8 +1361,8 @@
 ;; and do not carry any validation logic.
 
 (defn- explain-input-schema [input-schema]
-  (let [[required more] (split-with #(instance? One %) input-schema)]
-    (vec (concat (map #(explain (.-schema ^One %)) required)
+  (let [[required more] (split-with #(instance? Single %) input-schema)]
+    (vec (concat (map #(explain (.-schema ^Single %)) required)
                  (when (seq more)
                    ['& (mapv explain more)])))))
 
@@ -1380,7 +1379,7 @@
 
 (defn- arity [input-schema]
   (if (seq input-schema)
-    (if (instance? One (last input-schema))
+    (if (instance? Single (last input-schema))
       (count input-schema)
       Long/MAX_VALUE)
     0))
@@ -1423,7 +1422,7 @@
 
 (def Int
   "Any integral number."
-  (pred integer?))
+  (Predicate integer?))
 
 (def Num
   "Any number."
@@ -1463,23 +1462,23 @@
 
 (def Map
   "A Clojure map."
-  (pred map?))
+  (Predicate map?))
 
 (def Set
   "A Clojure set."
-  (pred set?))
+  (Predicate set?))
 
 (defn Vector
   "A Clojure vector of x's."
-  ([] (pred vector?))
+  ([] (Predicate vector?))
   ([x]
-   (I (pred vector?) [x])))
+   (I (Predicate vector?) [x])))
 
 (defn List
   "A Clojure list of x's."
-  ([] (pred list?))
+  ([] (Predicate list?))
   ([x]
-   (I (pred list?) [x])))
+   (I (Predicate list?) [x])))
 
 (defn Queue
   "A Clojure queue of x's."

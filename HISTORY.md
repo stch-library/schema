@@ -1,5 +1,13 @@
 # History
 
+## 0.3.0
+
+1. Replaced eq, pair, one, optional, record, protocol, pred, and enum with Eq, Pair, One, Optional, Record, Protocol, Predicate, and Enumerate, respectively.
+2. Changed One record to Single.
+3. Updated speclj dependency to latest.
+4. Added always-validate test.
+5. Changed project name and added to Clojars.
+
 ## 0.2.1
 
 1. Replaced loop with let in process-fn-arity to address https://github.com/Prismatic/schema/issues/65.

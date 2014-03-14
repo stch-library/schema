@@ -2,7 +2,7 @@
 
 (comment
 
-  (use :reload 'stch.schema)
+  (use 'stch.schema)
 
   (def Data
     "A schema for a nested data type"
@@ -24,7 +24,7 @@
 
   (def Address {:city String
                 :state String
-                :country (eq "US")})
+                :country (Eq "US")})
 
   (def User {:first-name String
              :last-name String
@@ -79,42 +79,42 @@
   (validate [Num] [1 2 3])
   (validate [Num] '(1 2 3))
 
-  (validate [(pair String Int)]
+  (validate [(Pair String Int)]
             [["David" 35]["Billy" 37]])
-  (validate [(pair String Int)]
+  (validate [(Pair String Int)]
             [["David" 35]["Billy" "37"]])
-  (validate [(pair String Int)]
+  (validate [(Pair String Int)]
             [["David" 35]["Billy"]])
-  (validate [(pair String Int)]
+  (validate [(Pair String Int)]
             [["David" 35][]])
-  (validate [(pair String :name Int :age)]
+  (validate [(Pair String :name Int :age)]
             [["David" 35][]])
-  (validate [(pair String :name Int :age)]
+  (validate [(Pair String :name Int :age)]
             [["David" 35][37 "Billy"]])
 
-  (validate [(one Int) Double] [1234 95.6 87.8 96.5])
-  (validate [(one Int) Double] ["1234" 95.6 87.8 96.5])
-  (validate [(one Int :id) (one String :alias)] [])
-  (validate [(optional Int :id) (optional String :name)] [])
-  (validate [(one Int) (one String)] [])
-  (validate [(one Int) (one String)] [1])
-  (validate [(one Int :id) (one String)] [])
-  (validate [(one Int) (one String) Keyword]
+  (validate [(One Int) Double] [1234 95.6 87.8 96.5])
+  (validate [(One Int) Double] ["1234" 95.6 87.8 96.5])
+  (validate [(One Int :id) (One String :alias)] [])
+  (validate [(Optional Int :id) (Optional String :name)] [])
+  (validate [(One Int) (One String)] [])
+  (validate [(One Int) (One String)] [1])
+  (validate [(One Int :id) (One String)] [])
+  (validate [(One Int) (One String) Keyword]
             ["hi" 5 'a])
   (validate [Int] [])
 
   (validate {:name String
-             :status (enum :active :inactive)}
+             :status (Enumerate :active :inactive)}
             {:name "Bobby"
              :status :active})
 
-  (validate [(pred even?)] [2 4 6])
-  (validate [(pred even?)] [1 2 4 6])
-  (validate (I String (pred #(= (count %) 2)
+  (validate [(Predicate even?)] [2 4 6])
+  (validate [(Predicate even?)] [1 2 4 6])
+  (validate (I String (Predicate #(= (count %) 2)
                             "length of 2"))
             "hi")
-  (validate [(I (pred odd?) Long)] [1 3 5])
-  (validate [(I (pred odd?) Long)] [1 3 (int 5)])
+  (validate [(I (Predicate odd?) Long)] [1 3 5])
+  (validate [(I (Predicate odd?) Long)] [1 3 (int 5)])
 
   (validate Symbol 'a)
   (validate [Symbol] ['a 'b 'c])

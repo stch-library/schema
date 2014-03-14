@@ -8,7 +8,7 @@
 
 (def Address {:city String
               :state String
-              :country (eq "US")})
+              :country (Eq "US")})
 
 (def User {:first-name String
            :last-name String
@@ -67,6 +67,10 @@
     (if (< x 5)
       (recur (inc x))
       x)))
+
+(defn' ^:always-validate always-val :- Int
+  [x :- Int]
+  (inc x))
 
 (defprotocol BasicMath
   (add [this y]))
@@ -295,124 +299,124 @@
   (it "List"
     (should= '(1 2 3)
              (validate [Num] '(1 2 3))))
-  (context "one (unnamed)"
+  (context "One (unnamed)"
     (it "Element present"
       (should= [1234 95.6]
-               (validate [(one Int) Double]
+               (validate [(One Int) Double]
                          [1234 95.6])))
     (it "Invalid type"
       (invalid! '[(not (integer? 57.0)) nil]
-                (check [(one Int) Double]
+                (check [(One Int) Double]
                        [57.0 95.6])))
     (it "Not present"
       (invalid! '[(not (present? elem0 elem1))]
-                (check [(one Int) (one String)] [])))
+                (check [(One Int) (One String)] [])))
     (it "Not present (second element)"
       (invalid! '[nil (not (present? elem1))]
-                (check [(one Int)
-                        (one String)] [234]))))
-  (context "one (named)"
+                (check [(One Int)
+                        (One String)] [234]))))
+  (context "One (named)"
     (it "Element present"
       (should= [1234 95.6]
-               (validate [(one Int :id) Double]
+               (validate [(One Int :id) Double]
                          [1234 95.6])))
     (it "Invalid type"
       (invalid! '[(named (not (integer? 57.0)) :id) nil]
-                (check [(one Int :id) Double]
+                (check [(One Int :id) Double]
                        [57.0 95.6])))
     (it "Not present"
       (invalid! '[(not (present? :id :name))]
-                (check [(one Int :id)
-                        (one String :name)] [])))
+                (check [(One Int :id)
+                        (One String :name)] [])))
     (it "Not present (second element)"
       (invalid! '[nil (not (present? :name))]
-                (check [(one Int :id)
-                        (one String :name)] [234]))))
-  (context "optional (unnamed)"
+                (check [(One Int :id)
+                        (One String :name)] [234]))))
+  (context "Optional (unnamed)"
     (it "Both elements not present"
       (should= []
-               (validate [(optional Int)
-                          (optional String)] [])))
+               (validate [(Optional Int)
+                          (Optional String)] [])))
     (it "Second element not present"
       (should= [1234]
-               (validate [(optional Int)
-                          (optional String)]
+               (validate [(Optional Int)
+                          (Optional String)]
                          [1234])))
     (it "Both elements present"
       (should= [1234 "Billy"]
-               (validate [(optional Int)
-                          (optional String)]
+               (validate [(Optional Int)
+                          (Optional String)]
                          [1234 "Billy"])))
     (it "First element not present"
       (invalid! '[(not (integer? "Billy"))]
-                (check [(optional Int)
-                        (optional String)] ["Billy"])))
+                (check [(Optional Int)
+                        (Optional String)] ["Billy"])))
     (it "Invalid types"
       (invalid! '[(not (integer? "1234"))
                   (not (instance? java.lang.String :Billy))]
-                (check [(optional Int)
-                        (optional String)] ["1234" :Billy]))))
-  (context "optional (named)"
+                (check [(Optional Int)
+                        (Optional String)] ["1234" :Billy]))))
+  (context "Optional (named)"
     (it "Both elements not present"
       (should= []
-               (validate [(optional Int :id)
-                          (optional String :name)] [])))
+               (validate [(Optional Int :id)
+                          (Optional String :name)] [])))
     (it "Second element not present"
       (should= [1234]
-               (validate [(optional Int :id)
-                          (optional String :name)]
+               (validate [(Optional Int :id)
+                          (Optional String :name)]
                          [1234])))
     (it "Both elements present"
       (should= [1234 "Billy"]
-               (validate [(optional Int :id)
-                          (optional String :name)]
+               (validate [(Optional Int :id)
+                          (Optional String :name)]
                          [1234 "Billy"])))
     (it "First element not present"
       (invalid! '[(named (not (integer? "Billy")) :id)]
-                (check [(optional Int :id)
-                        (optional String :name)] ["Billy"])))
+                (check [(Optional Int :id)
+                        (Optional String :name)] ["Billy"])))
     (it "Invalid types"
       (invalid! '[(named (not (integer? "1234")) :id)
                   (named (not (instance? java.lang.String :Billy)) :name)]
-                (check [(optional Int :id)
-                        (optional String :name)] ["1234" :Billy]))))
-  (context "pair"
+                (check [(Optional Int :id)
+                        (Optional String :name)] ["1234" :Billy]))))
+  (context "Pair"
     (it "unnamed"
       (should= [["David" 35] ["Billy" 37]]
-               (validate [(pair String Int)]
+               (validate [(Pair String Int)]
                          [["David" 35]["Billy" 37]])))
     (it "unnamed (fail)"
       (invalid! '[[nil (not (integer? "35"))] nil]
-                (check [(pair String Int)]
+                (check [(Pair String Int)]
                        [["David" "35"]["Billy" 37]])))
     (it "named"
       (should= [["David" 35] ["Billy" 37]]
-               (validate [(pair String :name Int :age)]
+               (validate [(Pair String :name Int :age)]
                          [["David" 35]["Billy" 37]])))
     (it "named (invalid type)"
       (invalid! '[nil [(named (not (instance? java.lang.String 37)) :name)
                        (named (not (integer? "Billy")) :age)]]
-               (check [(pair String :name Int :age)]
+               (check [(Pair String :name Int :age)]
                          [["David" 35][37 "Billy"]])))
     (it "named (not present)"
       (invalid! '[nil [(not (present? :name :age))]]
-                (check [(pair String :name Int :age)]
+                (check [(Pair String :name Int :age)]
                        [["David" 35][]])))))
 
-(describe "pred"
+(describe "Predicate"
   (it "even?"
-    (validate [(pred even?)] [2 4 6]))
+    (validate [(Predicate even?)] [2 4 6]))
   (it "even? (fail)"
     (invalid! '[(not (even? 1)) nil nil nil]
-              (check [(pred even?)] [1 2 4 6]))))
+              (check [(Predicate even?)] [1 2 4 6]))))
 
 (describe "Intersection"
   (it "pred and class"
     (should= [1 3 5]
-             (validate [(I (pred odd?) Long)] [1 3 5])))
+             (validate [(I (Predicate odd?) Long)] [1 3 5])))
   (it "pred and class (fail)"
     (invalid! '[nil nil (not (instance? java.lang.Long 5))]
-              (check [(I (pred odd?) Long)] [1 3 (int 5)]))))
+              (check [(I (Predicate odd?) Long)] [1 3 (int 5)]))))
 
 (describe "Union"
   (context "String or Keyword"
@@ -435,49 +439,49 @@
     (invalid! '(not (re-find #"(?i)^[A-Z]+$" "Billy Bob"))
               (check #"(?i)^[A-Z]+$" "Billy Bob"))))
 
-(describe "enum"
-  (it "enum of Keyword"
+(describe "Enumerate"
+  (it "Enumerate of Keyword"
     (should= {:name "Bobby"
              :status :active}
              (validate {:name String
-                        :status (enum :active :inactive)}
+                        :status (Enumerate :active :inactive)}
                        {:name "Bobby"
                         :status :active})))
-  (it "enum of Keyword (fail)"
+  (it "Enumerate of Keyword (fail)"
     (invalid! '{:status (not (#{:inactive :active} :suspended))}
               (check {:name String
-                      :status (enum :active :inactive)}
+                      :status (Enumerate :active :inactive)}
                      {:name "Bobby"
                       :status :suspended}))))
 
-(describe "eq"
+(describe "Eq"
   (it "success"
     (should= "US"
-             (validate (eq "US") "US")))
+             (validate (Eq "US") "US")))
   (it "fail"
     (invalid! '(not (= "US" :US))
-              (check (eq "US") :US))))
+              (check (Eq "US") :US))))
 
-(describe "protocol"
+(describe "Protocol"
   (it "success"
     (should= (->ANumber 3)
-             (validate (protocol BasicMath)
+             (validate (Protocol BasicMath)
                        (->ANumber 3))))
   (it "fail"
     (should-throw Exception
                   "Value does not match schema: (not (satisfies? BasicMath \"3\"))"
-      (validate (protocol BasicMath)
+      (validate (Protocol BasicMath)
                 "3"))))
 
-(describe "record"
+(describe "Record"
   (it "success"
     (should= (->ANumber 3)
-             (validate (record ANumber {:x Int})
+             (validate (Record ANumber {:x Int})
                        (->ANumber 3))))
   (it "fail"
     (should-throw Exception
                   "Value does not match schema: {:x (not (integer? :3))}"
-                  (validate (record ANumber {:x Int})
+                  (validate (Record ANumber {:x Int})
                             (->ANumber :3)))))
 
 (describe "Option"
@@ -539,6 +543,10 @@
   (it "loop/recur"
     (should= 5 (with-fn-validation
                  (loop-recur 3))))
+  (it "always validate"
+    (should-throw Exception
+                  "Input to always-val does not match schema: [(named (not (integer? \"3\")) x)]"
+      (always-val "3")))
   (context "explain"
     (it "single arity"
       (should= '(Fn Int [Int])
