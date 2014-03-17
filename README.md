@@ -42,7 +42,7 @@ Feedback is welcome.  New features should be directed to Prismatic Schema.
 Add the following to your project dependencies:
 
 ```Clojure
-[stch-library/schema "0.3.1"]
+[stch-library/schema "0.3.2"]
 ```
 
 ## API Documentation
