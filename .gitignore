@@ -3,6 +3,7 @@
 /classes
 /checkouts
 pom.xml
+pom.xml.asc
 *.jar
 *.class
 .lein-deps-sum
@@ -10,3 +11,4 @@ pom.xml
 .lein-plugins
 .lein-repl-history
 .nrepl-port
+.DS_Store

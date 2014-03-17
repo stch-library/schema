@@ -45,6 +45,10 @@ Add the following to your project dependencies:
 [stch-library/schema "0.3.0"]
 ```
 
+## API Documentation
+
+http://stch-library.github.io/schema
+
 ## Examples
 
 ```Clojure

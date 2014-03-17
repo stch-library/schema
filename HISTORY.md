@@ -1,5 +1,10 @@
 # History
 
+## 0.3.1
+
+1. Moved utility functions to separate project.
+2. Added docs.
+
 ## 0.3.0
 
 1. Replaced eq, pair, one, optional, record, protocol, pred, and enum with Eq, Pair, One, Optional, Record, Protocol, Predicate, and Enumerate, respectively.
