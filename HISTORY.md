@@ -1,5 +1,9 @@
 # History
 
+## 0.3.2
+
+1. Using latest version of util, 0.1.1.
+
 ## 0.3.1
 
 1. Moved utility functions to separate project.
