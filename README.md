@@ -28,7 +28,7 @@ I have my own set of unit-tests, around 120.  Code coverage is pretty decent, th
 
 Many thanks to Prismatic for sharing this awesome library.  It really is game changing in my opinion.  Please feel free to incorporate any changes into Prismatic Schema.  I will add significant changes from Prismatic Schema into this code base as they occur.  Most notably would be support for:
 
-```Clojure
+```clojure
 (defn' create-user
   [user-id :- Int & {:keys [name email]} :- {:name String :email String}])
 ```
@@ -37,11 +37,11 @@ This code will be used in production, but currently is not.
 
 Feedback is welcome.  New features should be directed to Prismatic Schema.
 
-## How to use
+## Installation
 
 Add the following to your project dependencies:
 
-```Clojure
+```clojure
 [stch-library/schema "0.3.2"]
 ```
 
@@ -49,14 +49,14 @@ Add the following to your project dependencies:
 
 http://stch-library.github.io/schema
 
-## Examples
+## How to use
 
 ```Clojure
 (use 'stch.schema)
 ```
 
 Functions
-```Clojure
+```clojure
 (defn' rest-args :- (Vector String)
   [name :- String, age :- Int & likes :- [String]]
   (vec likes))
@@ -80,7 +80,7 @@ Functions
 ```
 
 Records
-```Clojure
+```clojure
 (defrecord' Employee
   [hired :- Date
    position :- Keyword
@@ -88,7 +88,7 @@ Records
 ```
 
 Built-in types
-```Clojure
+```clojure
 (validate String "Billy")
 (validate Boolean true)
 (validate Symbol 'a)
@@ -115,19 +115,19 @@ Built-in types
 ```
 
 Sequences
-```Clojure
+```clojure
 (validate [(One Int) Double] [1234 95.6])
 (validate [(Optional Int) (Optional String)] [])
 (validate [(Pair String Int)] [["David" 35]["Billy" 37]])
 ```
 
 Predicates
-```Clojure
+```clojure
 (def Set (Predicate set?))
 ```
 
 Union and Intersection
-```Clojure
+```clojure
 (def Named (U String Symbol Keyword))
 (defn List [x] (I (Predicate list?) [x]))
 ```
