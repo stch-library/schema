@@ -42,7 +42,7 @@ Feedback is welcome.  New features should be directed to Prismatic Schema.
 Add the following to your project dependencies:
 
 ```clojure
-[stch-library/schema "0.3.2"]
+[stch-library/schema "0.3.3"]
 ```
 
 ## API Documentation
@@ -51,7 +51,7 @@ http://stch-library.github.io/schema
 
 ## How to use
 
-```Clojure
+```clojure
 (use 'stch.schema)
 ```
 

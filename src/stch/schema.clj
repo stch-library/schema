@@ -86,7 +86,7 @@
   (We highly prefer the :- syntax to this abomination, however.)
   See the docstrings of defrecord', fn', and defn' for more
   details about how to use these macros."
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [clojure.data :as data]
             [stch.schema.util :as util])
   (:use [stch.util :only [indexed]]))
@@ -521,8 +521,8 @@
       (str "["
            (->> arglist
                 (partition 3)
-                (map #(str/join " " %))
-                (str/join ", "))
+                (map #(string/join " " %))
+                (string/join ", "))
            "]")
       arglist)))
 
@@ -589,9 +589,9 @@
          ~(util/assoc-when
            (or attr-map? {})
            :doc (str
-                 (str "Inputs: " (if (= 1 (count raw-arglists))
-                                   (format-arglist (first raw-arglists))
-                                   raw-arglists))
+                 "Inputs: "
+                 (->> (map format-arglist raw-arglists)
+                      (string/join " "))
                  (when-let [ret (when (= (first more) :-) (second more))]
                    (str "\n  Returns: " ret))
                  (when doc-string? (str  "\n\n  " doc-string?)))

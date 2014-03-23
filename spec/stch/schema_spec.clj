@@ -72,6 +72,14 @@
   [x :- Int]
   (inc x))
 
+(defn' fn-with-doc :- Int
+  "Increment x by one."
+  [x :- Int]
+  (inc x))
+
+(defn' no-types [x]
+  (inc x))
+
 (defprotocol BasicMath
   (add [this y]))
 
@@ -561,7 +569,20 @@
                (explain (fn-schema higher-order))))
     (it "any fn"
       (should= '(Fn (Fn Any [& [Any]]) [(Fn Any [& [Any]])])
-               (explain (fn-schema any-fn))))))
+               (explain (fn-schema any-fn)))))
+  (context "doc"
+    (it "single arity"
+      (should= "Inputs: [x :- Int]\n  Returns: Int"
+               (-> #'simple-fn meta :doc)))
+    (it "multiple arity"
+      (should= "Inputs: [url :- String] [url :- String, follow-redirects? :- Boolean]\n  Returns: String"
+               (-> #'multi-arity meta :doc)))
+    (it "doc string"
+      (should= "Inputs: [x :- Int]\n  Returns: Int\n\n  Increment x by one."
+               (-> #'fn-with-doc meta :doc)))
+    (it "no types"
+      (should= "Inputs: [x]"
+               (-> #'no-types meta :doc)))))
 
 (describe "defrecord'"
   (it "new record"
