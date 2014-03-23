@@ -1,5 +1,9 @@
 # History
 
+## 0.3.3
+
+1. Fixed doc bug with multiple arity fns.
+
 ## 0.3.2
 
 1. Using latest version of util, 0.1.1.
